@@ -9,6 +9,7 @@ When answering:
 - Answer in the same language the user writes in (italiano if they ask in Italian).`;
 
 export default async function handler(req) {
+  // Gestione CORS obbligatoria per Vercel
   if (req.method === 'OPTIONS') {
     return new Response('OK', {
       headers: {
@@ -28,31 +29,28 @@ export default async function handler(req) {
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: 'Chiave API non configurata nel pannello di Vercel.' }), { status: 500 });
+      return new Response(JSON.stringify({ error: 'Chiave API non configurata nel pannello di Vercel.' }), { 
+        status: 500,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      });
     }
 
-    const lastUserMessage = contents.filter(c => c.role === 'user').pop();
+    // Estraiamo l'ultimo messaggio inviato dall'utente
+    const lastUserMessage = contents && contents.filter ? contents.filter(c => c.role === 'user').pop() : null;
     const messageText = lastUserMessage?.parts?.[0]?.text || "Ciao";
 
-    // Utilizziamo v1beta che è il più compatibile in assoluto con le chiavi AI Studio gratuite
+    // Endpoint standard di Google Gemini 1.5 Flash
     const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
-    // Creiamo un timeout di 8 secondi per evitare il caricamento infinito se Google è lento
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
 
     const apiResponse = await fetch(GEMINI_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ role: 'user', parts: [{ text: messageText }] }],
-        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-        generationConfig: { maxOutputTokens: 1000 }
-      }),
-      signal: controller.signal
+        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] }
+      })
     });
 
-    clearTimeout(timeoutId);
     const data = await apiResponse.json();
 
     if (data.error) {
@@ -62,10 +60,10 @@ export default async function handler(req) {
       });
     }
 
-    const textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
     if (!textOutput) {
-      return new Response(JSON.stringify({ error: 'Google Gemini ha risposto vuoto. Verifica i filtri di sicurezza della tua chiave.' }), { 
+      return new Response(JSON.stringify({ error: 'Google Gemini ha risposto vuoto.' }), { 
         status: 200,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
       });
@@ -80,7 +78,7 @@ export default async function handler(req) {
     });
 
   } catch (error) {
-    return new Response(JSON.stringify({ error: `Il server ha impiegato troppo tempo a rispondere o ha riscontrato un errore: ${error.message}` }), { 
+    return new Response(JSON.stringify({ error: `Errore interno: ${error.message}` }), { 
       status: 500,
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
