@@ -162,7 +162,6 @@ textarea:focus { border-color: var(--border-bright); }
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-card">
     <span class="login-eye">𓂀</span>
@@ -183,9 +182,7 @@ textarea:focus { border-color: var(--border-bright); }
   </div>
 </div>
 
-<!-- APP -->
 <div id="app">
-  <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="sidebar-title">📜 Cronologia Ruling</div>
     <div class="history-list" id="history-list">
@@ -203,7 +200,6 @@ textarea:focus { border-color: var(--border-bright); }
     </div>
   </div>
 
-  <!-- CHAT -->
   <div class="chat-panel">
     <div class="header">
       <span class="eye">𓂀</span>
@@ -232,8 +228,8 @@ textarea:focus { border-color: var(--border-bright); }
 </div>
 
 <script>
-// --- IMPORTANTE: INSERISCI QUI L'URL COMPLETO DEL TUO PROGETTO VERCEL DOPO IL PASSO 3 ---
-// Se carichi la pagina HTML nello stesso progetto Vercel del backend, puoi semplicemente lasciare "/api/chat"
+// Usando il percorso relativo "/api/chat", il file HTML comunica direttamente con la funzione 
+// caricata sullo stesso server Vercel senza bisogno di specificare manualmente l'URL!
 const BACKEND_URL = "/api/chat";
 
 let chatHistory = [], isLoading = false, currentUser = null;
@@ -286,7 +282,6 @@ function addToHistory(question) {
   const item = document.createElement('div');
   item.className = 'history-item';
   item.innerHTML = `<div class="h-q">${esc(question)}</div><div class="h-time">${time}</div>`;
-  item.onclick = () => { document.querySelectorAll('.history-item').forEach(i=>i.classList.remove('active')); item.classList.add('active'); };
   list.insertBefore(item, list.firstChild);
 }
 
@@ -346,11 +341,8 @@ function fmtMd(text) {
     .replace(/`(.*?)`/g, '<code>$1</code>')
     .replace(/^### (.*)/gm, '<h3>$1</h3>')
     .replace(/^- (.*)/gm, '<li>$1</li>')
-    .replace(/
-
-/g, '</p><p>')
-    .replace(/
-/g, '<br>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>')
     .replace(/^(?!<)(.+)/gm, '<p>$1</p>');
 }
 
@@ -384,7 +376,7 @@ async function sendMessage() {
     const messages = document.getElementById('messages');
     const div = document.createElement('div'); div.className = 'msg';
     const e = document.createElement('div'); e.className = 'error-bubble';
-    e.textContent = '⚠ L'Oracolo non è raggiungibile: ' + err.message;
+    e.textContent = "L'Oracolo non risponde: " + err.message;
     div.appendChild(e); messages.appendChild(div);
     chatHistory.pop();
   }
