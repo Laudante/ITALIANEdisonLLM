@@ -34,7 +34,6 @@ export default async function handler(req) {
     const lastUserMessage = contents.filter(c => c.role === 'user').pop();
     const messageText = lastUserMessage?.parts?.[0]?.text || "Ciao";
 
-    // Aggiornato all'endpoint v1 stabile e al modello gemini-2.5-flash
     const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     const apiResponse = await fetch(GEMINI_URL, {
@@ -42,7 +41,8 @@ export default async function handler(req) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ role: 'user', parts: [{ text: messageText }] }],
-        systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] }
+        // Corretto da systemInstruction a system_instruction per la versione v1 di Gemini
+        system_instruction: { parts: [{ text: SYSTEM_PROMPT }] }
       })
     });
 
