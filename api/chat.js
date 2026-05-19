@@ -9,7 +9,6 @@ When answering:
 - Answer in the same language the user writes in (italiano if they ask in Italian).`;
 
 export default async function handler(req) {
-  // Gestione CORS obbligatoria per Vercel
   if (req.method === 'OPTIONS') {
     return new Response('OK', {
       headers: {
@@ -29,18 +28,14 @@ export default async function handler(req) {
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: 'Chiave API non configurata nel pannello di Vercel.' }), { 
-        status: 500,
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
-      });
+      return new Response(JSON.stringify({ error: 'Chiave API non configurata nel pannello di Vercel.' }), { status: 500 });
     }
 
-    // Estraiamo l'ultimo messaggio inviato dall'utente
-    const lastUserMessage = contents && contents.filter ? contents.filter(c => c.role === 'user').pop() : null;
+    const lastUserMessage = contents.filter(c => c.role === 'user').pop();
     const messageText = lastUserMessage?.parts?.[0]?.text || "Ciao";
 
-    // Endpoint standard di Google Gemini 1.5 Flash
-    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    // Aggiornato all'endpoint v1 stabile e al modello gemini-2.5-flash
+    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     const apiResponse = await fetch(GEMINI_URL, {
       method: 'POST',
@@ -60,7 +55,7 @@ export default async function handler(req) {
       });
     }
 
-    const textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!textOutput) {
       return new Response(JSON.stringify({ error: 'Google Gemini ha risposto vuoto.' }), { 
@@ -78,7 +73,7 @@ export default async function handler(req) {
     });
 
   } catch (error) {
-    return new Response(JSON.stringify({ error: `Errore interno: ${error.message}` }), { 
+    return new Response(JSON.stringify({ error: `Errore del server: ${error.message}` }), { 
       status: 500,
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
