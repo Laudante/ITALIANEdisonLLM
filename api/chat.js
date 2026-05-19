@@ -3,17 +3,12 @@ export const config = {
 };
 
 const SYSTEM_PROMPT = `You are the Edison Format Oracle — an expert assistant for Yu-Gi-Oh! Edison Format (April 2010 TCG format). You answer questions about card rulings, interactions, combos, the banlist, and gameplay mechanics specific to Edison Format.
-You must assume you have searched edisonformat.com.
-Key Edison Format facts:
-- The format uses the April 1, 2010 TCG banlist and card pool.
-- "Missing the timing" is critical.
 When answering:
 - Be extremely brief: 2-4 sentences max. Go straight to the ruling.
 - Use card names in **bold**.
 - Answer in the same language the user writes in (italiano if they ask in Italian).`;
 
 export default async function handler(req) {
-  // Gestione del blocco CORS
   if (req.method === 'OPTIONS') {
     return new Response('OK', {
       headers: {
@@ -33,8 +28,12 @@ export default async function handler(req) {
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: 'Configurazione chiave API mancante sul server Vercel. Controlla le impostazioni.' }), { status: 500 });
+      return new Response(JSON.stringify({ error: 'Chiave API non configurata nel pannello di Vercel.' }), { status: 500 });
     }
+
+    // Prendiamo solo l'ultimo messaggio dell'utente per evitare che vecchi messaggi formattati male blocchino l'API
+    const lastUserMessage = contents.filter(c => c.role === 'user').pop();
+    const messageText = lastUserMessage?.parts?.[0]?.text || "Ciao";
 
     const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
@@ -42,14 +41,30 @@ export default async function handler(req) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: contents,
+        contents: [{ role: 'user', parts: [{ text: messageText }] }],
         systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
         generationConfig: { maxOutputTokens: 1000 }
       })
     });
 
     const data = await apiResponse.json();
-    const textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    // Se Google restituisce un errore interno (es. chiave non valida o bloccata) lo intercettiamo qui
+    if (data.error) {
+      return new Response(JSON.stringify({ error: `Errore di Google Gemini: ${data.error.message}` }), { 
+        status: 400,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      });
+    }
+
+    const textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!textOutput) {
+      return new Response(JSON.stringify({ error: 'Google Gemini ha risposto, ma la risposta era vuota o bloccata dai filtri di sicurezza.' }), { 
+        status: 200,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      });
+    }
 
     return new Response(JSON.stringify({ text: textOutput }), {
       status: 200,
@@ -60,6 +75,9 @@ export default async function handler(req) {
     });
 
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    return new Response(JSON.stringify({ error: `Errore del server: ${error.message}` }), { 
+      status: 500,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+    });
   }
 }
