@@ -13,6 +13,7 @@ When answering:
 - Answer in the same language the user writes in (italiano if they ask in Italian).`;
 
 export default async function handler(req) {
+  // Gestione del blocco CORS
   if (req.method === 'OPTIONS') {
     return new Response('OK', {
       headers: {
@@ -32,7 +33,7 @@ export default async function handler(req) {
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: 'Configurazione chiave API mancante sul server Vercel' }), { status: 500 });
+      return new Response(JSON.stringify({ error: 'Configurazione chiave API mancante sul server Vercel. Controlla le impostazioni.' }), { status: 500 });
     }
 
     const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
