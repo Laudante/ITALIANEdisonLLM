@@ -36,13 +36,18 @@ export default async function handler(req) {
 
     const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
+    // Passiamo le istruzioni direttamente nei contents per compatibilità totale
+    const payloadContents = [
+      { role: 'user', parts: [{ text: `INSTRUCTIONS: ${SYSTEM_PROMPT}` }] },
+      { role: 'model', parts: [{ text: "Understood. I am now the Edison Format Oracle. I will follow these rules strictly." }] },
+      { role: 'user', parts: [{ text: messageText }] }
+    ];
+
     const apiResponse = await fetch(GEMINI_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ text: messageText }] }],
-        // Corretto da systemInstruction a system_instruction per la versione v1 di Gemini
-        system_instruction: { parts: [{ text: SYSTEM_PROMPT }] }
+        contents: payloadContents
       })
     });
 
