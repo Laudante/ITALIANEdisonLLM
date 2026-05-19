@@ -23,41 +23,95 @@ body {
     radial-gradient(ellipse at 80% 100%, rgba(201,162,39,0.06) 0%, transparent 60%);
 }
 
-#login-screen { width: 100%; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-.login-card { width: 100%; max-width: 400px; background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--gold-dark); padding: 2.5rem 2rem 2rem; display: flex; flex-direction: column; align-items: center; gap: 1.1rem; }
+/* LOGIN */
+#login-screen {
+  width: 100%; min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+}
+.login-card {
+  width: 100%; max-width: 400px;
+  background: var(--surface);
+  border: 1px solid var(--border); border-top: 3px solid var(--gold-dark);
+  padding: 2.5rem 2rem 2rem;
+  display: flex; flex-direction: column; align-items: center; gap: 1.1rem;
+}
 .login-eye { font-size: 3rem; line-height: 1; filter: drop-shadow(0 0 16px rgba(201,162,39,0.5)); }
-.login-title { font-family: 'Cinzel', serif; font-size: 1.35rem; font-weight: 700; color: var(--gold); letter-spacing: 0.12em; text-transform: uppercase; text-align: center; text-shadow: 0 0 20px rgba(201,162,39,0.3); }
+.login-title {
+  font-family: 'Cinzel', serif; font-size: 1.35rem; font-weight: 700;
+  color: var(--gold); letter-spacing: 0.12em; text-transform: uppercase;
+  text-align: center; text-shadow: 0 0 20px rgba(201,162,39,0.3);
+}
 .login-sub { font-style: italic; color: var(--text-muted); font-size: 0.82rem; text-align: center; line-height: 1.5; }
 .login-divider { width: 100%; height: 1px; background: var(--border); }
 .login-field { width: 100%; display: flex; flex-direction: column; gap: 0.3rem; }
-.login-field label { font-family: 'Fira Mono', monospace; font-size: 0.63rem; letter-spacing: 0.1em; color: var(--text-muted); text-transform: uppercase; }
-.login-field input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 2px; color: var(--text); font-family: 'IM Fell English', serif; font-size: 0.92rem; padding: 0.6rem 0.85rem; outline: none; transition: border-color 0.2s; }
+.login-field label {
+  font-family: 'Fira Mono', monospace; font-size: 0.63rem;
+  letter-spacing: 0.1em; color: var(--text-muted); text-transform: uppercase;
+}
+.login-field input {
+  width: 100%; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 2px;
+  color: var(--text); font-family: 'IM Fell English', serif;
+  font-size: 0.92rem; padding: 0.6rem 0.85rem; outline: none;
+  transition: border-color 0.2s;
+}
 .login-field input::placeholder { color: var(--text-muted); font-style: italic; }
 .login-field input:focus { border-color: var(--border-bright); }
-.login-btn { width: 100%; background: linear-gradient(135deg, #2a1f4a, #3d2d6a); border: 1px solid rgba(160,123,200,0.5); color: var(--gold-light); font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em; padding: 0.7rem; cursor: pointer; border-radius: 2px; transition: all 0.2s; text-transform: uppercase; margin-top: 0.2rem; }
+.login-btn {
+  width: 100%; background: linear-gradient(135deg, #2a1f4a, #3d2d6a);
+  border: 1px solid rgba(160,123,200,0.5); color: var(--gold-light);
+  font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 600;
+  letter-spacing: 0.1em; padding: 0.7rem; cursor: pointer;
+  border-radius: 2px; transition: all 0.2s; text-transform: uppercase; margin-top: 0.2rem;
+}
 .login-btn:hover { background: linear-gradient(135deg, #3d2d6a, #5a3f94); border-color: var(--accent-light); box-shadow: 0 0 14px rgba(123,94,167,0.3); }
 .login-error { font-size: 0.78rem; color: #e88; font-style: italic; text-align: center; min-height: 1rem; }
 .login-note { font-family: 'Fira Mono', monospace; font-size: 0.58rem; color: var(--text-muted); text-align: center; opacity: 0.55; letter-spacing: 0.04em; }
 
+/* APP LAYOUT */
 #app { display: none; width: 100%; flex-direction: row; min-height: 100vh; max-width: 1100px; }
-.sidebar { width: 255px; flex-shrink: 0; border-right: 1px solid var(--border); display: flex; flex-direction: column; min-height: 100vh; padding: 1.4rem 0 1rem; }
-.sidebar-title { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.14em; color: var(--text-muted); text-transform: uppercase; padding: 0 1rem 0.8rem; border-bottom: 1px solid var(--border); }
+
+/* SIDEBAR */
+.sidebar {
+  width: 255px; flex-shrink: 0; border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; min-height: 100vh; padding: 1.4rem 0 1rem;
+}
+.sidebar-title {
+  font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.14em;
+  color: var(--text-muted); text-transform: uppercase;
+  padding: 0 1rem 0.8rem; border-bottom: 1px solid var(--border);
+}
 .history-list { flex: 1; overflow-y: auto; padding: 0.5rem 0; }
 .history-empty { font-style: italic; font-size: 0.78rem; color: var(--text-muted); padding: 1rem; opacity: 0.55; }
-.history-item { padding: 0.55rem 1rem; cursor: pointer; border-left: 2px solid transparent; transition: all 0.15s; }
+.history-item {
+  padding: 0.55rem 1rem; cursor: pointer;
+  border-left: 2px solid transparent; transition: all 0.15s;
+}
 .history-item:hover { background: rgba(201,162,39,0.04); border-left-color: var(--gold-dark); }
 .history-item.active { background: rgba(123,94,167,0.08); border-left-color: var(--accent); }
 .history-item .h-q { font-size: 0.78rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.4; }
 .history-item .h-time { font-family: 'Fira Mono', monospace; font-size: 0.58rem; color: var(--text-muted); margin-top: 2px; }
 .sidebar-footer { padding: 0.9rem 1rem 0; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.5rem; }
 .sidebar-user { display: flex; align-items: center; gap: 0.55rem; }
-.sidebar-avatar { width: 27px; height: 27px; border-radius: 50%; background: linear-gradient(135deg, #1a2a1a, #2a3a20); border: 1px solid rgba(201,162,39,0.3); display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 0.62rem; color: var(--gold); flex-shrink: 0; }
+.sidebar-avatar {
+  width: 27px; height: 27px; border-radius: 50%;
+  background: linear-gradient(135deg, #1a2a1a, #2a3a20);
+  border: 1px solid rgba(201,162,39,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cinzel', serif; font-size: 0.62rem; color: var(--gold); flex-shrink: 0;
+}
 .sidebar-username { font-size: 0.78rem; color: var(--text); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sidebar-btns { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-.icon-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); font-family: 'Fira Mono', monospace; font-size: 0.58rem; letter-spacing: 0.07em; padding: 3px 9px; cursor: pointer; border-radius: 2px; text-transform: uppercase; transition: all 0.2s; }
+.icon-btn {
+  background: none; border: 1px solid var(--border);
+  color: var(--text-muted); font-family: 'Fira Mono', monospace;
+  font-size: 0.58rem; letter-spacing: 0.07em; padding: 3px 9px;
+  cursor: pointer; border-radius: 2px; text-transform: uppercase; transition: all 0.2s;
+}
 .icon-btn:hover { border-color: var(--gold-dark); color: var(--gold); }
 .icon-btn.danger:hover { border-color: var(--red); color: #e88; }
 
+/* CHAT PANEL */
 .chat-panel { flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 .header { padding: 1.8rem 2rem 1.1rem; text-align: center; border-bottom: 1px solid var(--border); position: relative; }
 .header::before { content: ''; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%); width: 120px; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
@@ -73,7 +127,7 @@ body {
 .avatar { width: 31px; height: 31px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-weight: 600; }
 .avatar.ai { background: linear-gradient(135deg, #2a1f4a, #4a3370); border: 1px solid rgba(160,123,200,0.4); color: var(--gold-light); font-size: 0.82rem; }
 .avatar.user-av { background: linear-gradient(135deg, #1a2a1a, #2a3a20); border: 1px solid rgba(201,162,39,0.3); color: var(--gold); font-size: 0.65rem; }
-.bubble { max-width: 78%; padding: 0.65rem 0.95rem; border-radius: 2px; line-height: 1.7; font-size: 0.88rem; overflow-wrap: break-word; }
+.bubble { max-width: 78%; padding: 0.65rem 0.95rem; border-radius: 2px; line-height: 1.7; font-size: 0.88rem; }
 .bubble.ai { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); color: var(--text); }
 .bubble.user { background: var(--surface2); border: 1px solid rgba(201,162,39,0.2); border-right: 3px solid var(--gold-dark); color: var(--text); font-style: italic; }
 .bubble .source-tag { display: block; font-family: 'Fira Mono', monospace; font-size: 0.6rem; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 0.55rem; padding-top: 0.35rem; letter-spacing: 0.04em; }
@@ -113,14 +167,8 @@ textarea:focus { border-color: var(--border-bright); }
   <div class="login-card">
     <span class="login-eye">𓂀</span>
     <div class="login-title">Edison Format Oracle</div>
-    <div class="login-sub">Inserisci le credenziali per accedere agli archivi del formato.</div>
+    <div class="login-sub">Inserisci il tuo nome da Duellante per accedere agli archivi del formato.</div>
     <div class="login-divider"></div>
-    
-    <div class="login-field">
-      <label>Anthropic API Key</label>
-      <input type="password" id="login-apikey" placeholder="sk-ant-api03-..." onkeydown="loginKey(event)">
-    </div>
-    
     <div class="login-field">
       <label>Nome Duellante</label>
       <input type="text" id="login-name" placeholder="Es. YugiMoto96" maxlength="30" onkeydown="loginKey(event)">
@@ -131,7 +179,7 @@ textarea:focus { border-color: var(--border-bright); }
     </div>
     <div class="login-error" id="login-error"></div>
     <button class="login-btn" onclick="doLogin()">Entra nell'Oracolo</button>
-    <div class="login-note">La chiave API rimane nel tuo browser e non viene salvata sui nostri server.</div>
+    <div class="login-note">Nessun dato viene salvato su server · Accesso locale</div>
   </div>
 </div>
 
@@ -184,43 +232,18 @@ textarea:focus { border-color: var(--border-bright); }
 </div>
 
 <script>
-const PROXY_URL = "https://corsproxy.io/?";
-const API_URL = "https://api.anthropic.com/v1/messages";
-const SYSTEM_PROMPT = `You are the Edison Format Oracle — an expert assistant for Yu-Gi-Oh! Edison Format (April 2010 TCG format). You answer questions about card rulings, interactions, combos, the banlist, and gameplay mechanics specific to Edison Format.
+// --- IMPORTANTE: INSERISCI QUI L'URL COMPLETO DEL TUO PROGETTO VERCEL DOPO IL PASSO 3 ---
+// Se carichi la pagina HTML nello stesso progetto Vercel del backend, puoi semplicemente lasciare "/api/chat"
+const BACKEND_URL = "https://il-tuo-progetto.vercel.app/api/chat";
 
-You have access to web search and MUST search edisonformat.com for rulings before answering. Always search:
-1. https://www.edisonformat.com/rulings — for individual card rulings
-2. https://www.edisonformat.com/rules — for general format rules
-3. https://www.edisonformat.com/ — for banlist and other info
-
-Key Edison Format facts you know:
-- The format uses the April 1, 2010 TCG banlist
-- It uses the card pool available as of April 1, 2010 (sets through Absolute Powerforce + Hidden Arsenal 1 + Stardust Overdrive sneak)
-- Important rulings use "Spell Speed" system, chain rules, and older rule interactions
-- "Missing the timing" is a critical concept
-
-When answering:
-- Search edisonformat.com first for the specific card or ruling
-- Be extremely brief: 2-4 sentences max, no preamble, go straight to the ruling
-- Give the ruling first, then a one-line source note
-- Use card names in **bold**
-- No long explanations, no section headers, no bullet lists unless strictly necessary
-- Answer in the same language the user writes in (italiano if they ask in Italian)`;
-
-let chatHistory = [], isLoading = false, currentUser = null, rulingHistory = [];
-let userApiKey = "";
+let chatHistory = [], isLoading = false, currentUser = null;
 
 function loginKey(e) { if (e.key === 'Enter') doLogin(); }
 
 function doLogin() {
-  const apiKey = document.getElementById('login-apikey').value.trim();
   const name = document.getElementById('login-name').value.trim();
   const deck = document.getElementById('login-deck').value.trim();
-  
-  if (!apiKey || !apiKey.startsWith('sk-ant-')) { document.getElementById('login-error').textContent = 'Inserisci una API Key Anthropic valida.'; return; }
   if (!name) { document.getElementById('login-error').textContent = 'Inserisci un nome da Duellante.'; return; }
-  
-  userApiKey = apiKey;
   currentUser = { name, deck };
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
@@ -230,10 +253,9 @@ function doLogin() {
 }
 
 function doLogout() {
-  currentUser = null; chatHistory = []; rulingHistory = []; userApiKey = "";
+  currentUser = null; chatHistory = [];
   document.getElementById('app').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('login-apikey').value = '';
   document.getElementById('login-name').value = '';
   document.getElementById('login-deck').value = '';
   document.getElementById('login-error').textContent = '';
@@ -244,12 +266,12 @@ function doLogout() {
 
 function showWelcome() {
   const { name, deck } = currentUser;
-  const extra = deck ? ` Vedo che giochi <em>\${esc(deck)}</em> — ottima scelta.` : '';
-  addBotHTML(`Benvenuto, Duellante <strong>\${esc(name)}</strong>.\${extra} Sono l'Oracolo dell'Edison Format — consulto gli archivi di <em>edisonformat.com</em> per rispondere alle tue domande su ruling e interazioni del formato aprile 2010.`);
+  const extra = deck ? ` Vedo che giochi <em>${esc(deck)}</em> — ottima scelta.` : '';
+  addBotHTML(`Benvenuto, Duellante <strong>${esc(name)}</strong>.${extra} Sono l'Oracolo dell'Edison Format — rispondo alle tue domande su ruling e interazioni del formato aprile 2010.`);
 }
 
 function clearHistory() {
-  rulingHistory = []; chatHistory = [];
+  chatHistory = [];
   document.getElementById('messages').innerHTML = '';
   document.getElementById('history-list').innerHTML = '<div class="history-empty" id="history-empty">Nessuna domanda ancora.</div>';
   document.getElementById('suggestions').style.display = 'flex';
@@ -263,7 +285,7 @@ function addToHistory(question) {
   if (empty) empty.remove();
   const item = document.createElement('div');
   item.className = 'history-item';
-  item.innerHTML = `<div class="h-q">\${esc(question)}</div><div class="h-time">\${time}</div>`;
+  item.innerHTML = `<div class="h-q">${esc(question)}</div><div class="h-time">${time}</div>`;
   item.onclick = () => { document.querySelectorAll('.history-item').forEach(i=>i.classList.remove('active')); item.classList.add('active'); };
   list.insertBefore(item, list.firstChild);
 }
@@ -278,7 +300,7 @@ function addBotHTML(html) {
   const div = document.createElement('div'); div.className = 'msg';
   const av = document.createElement('div'); av.className = 'avatar ai'; av.textContent = '𓂀';
   const bubble = document.createElement('div'); bubble.className = 'bubble ai';
-  bubble.innerHTML = `<p>\${html}</p>`;
+  bubble.innerHTML = `<p>${html}</p>`;
   div.appendChild(av); div.appendChild(bubble);
   messages.appendChild(div);
   div.scrollIntoView({behavior:'smooth', block:'end'});
@@ -286,11 +308,11 @@ function addBotHTML(html) {
 
 function addMessage(role, content) {
   const messages = document.getElementById('messages');
-  const div = document.createElement('div'); div.className = `msg \${role==='user'?'user':''}`;
+  const div = document.createElement('div'); div.className = `msg ${role==='user'?'user':''}`;
   const av = document.createElement('div');
-  av.className = `avatar \${role==='user'?'user-av':'ai'}`;
+  av.className = `avatar ${role==='user'?'user-av':'ai'}`;
   av.textContent = role==='user' ? (currentUser ? currentUser.name.slice(0,2).toUpperCase() : 'TU') : '𓂀';
-  const bubble = document.createElement('div'); bubble.className = `bubble \${role==='user'?'user':'ai'}`;
+  const bubble = document.createElement('div'); bubble.className = `bubble ${role==='user'?'user':'ai'}`;
   if (role==='user') {
     bubble.textContent = content;
   } else {
@@ -324,8 +346,11 @@ function fmtMd(text) {
     .replace(/`(.*?)`/g, '<code>$1</code>')
     .replace(/^### (.*)/gm, '<h3>$1</h3>')
     .replace(/^- (.*)/gm, '<li>$1</li>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/\n/g, '<br>')
+    .replace(/
+
+/g, '</p><p>')
+    .replace(/
+/g, '<br>')
     .replace(/^(?!<)(.+)/gm, '<p>$1</p>');
 }
 
@@ -339,35 +364,21 @@ async function sendMessage() {
   isLoading = true; document.getElementById('sendBtn').disabled = true;
   addMessage('user', text);
   addToHistory(text);
-  chatHistory.push({role:'user', content: text});
+  chatHistory.push({role:'user', parts: [{text: text}]});
   addThinking();
-  
   try {
-    const res = await fetch(PROXY_URL + encodeURIComponent(API_URL), {
+    const res = await fetch(BACKEND_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': userApiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20240620',
-        max_tokens: 1000,
-        system: SYSTEM_PROMPT,
-        messages: chatHistory
-      })
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ contents: chatHistory })
     });
-    
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error?.message || 'Errore di rete o autenticazione');
-    
-    const fullText = data.content.filter(b=>b.type==='text').map(b=>b.text).join('\n');
+    if (!res.ok) throw new Error(data.error || 'Errore del server remoto');
     removeThinking();
-    if (fullText) {
-      addMessage('assistant', fullText);
-      chatHistory.push({role:'assistant', content: fullText});
-    } else throw new Error("Nessuna risposta dall'Oracolo");
+    if (data.text) {
+      addMessage('assistant', data.text);
+      chatHistory.push({role:'model', parts: [{text: data.text}]});
+    } else throw new Error("Risposta vuota dall'Oracolo");
   } catch(err) {
     removeThinking();
     const messages = document.getElementById('messages');
@@ -377,7 +388,6 @@ async function sendMessage() {
     div.appendChild(e); messages.appendChild(div);
     chatHistory.pop();
   }
-  
   isLoading = false; document.getElementById('sendBtn').disabled = false;
   document.getElementById('userInput').focus();
 }
