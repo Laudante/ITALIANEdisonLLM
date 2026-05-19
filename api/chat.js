@@ -34,8 +34,12 @@ export default async function handler(req) {
     const lastUserMessage = contents.filter(c => c.role === 'user').pop();
     const messageText = lastUserMessage?.parts?.[0]?.text || "Ciao";
 
-    // Modificato l'URL alla versione stabile v1 e rimosso l'ambiguità del modello
-    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    // Utilizziamo v1beta che è il più compatibile in assoluto con le chiavi AI Studio gratuite
+    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+    // Creiamo un timeout di 8 secondi per evitare il caricamento infinito se Google è lento
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
 
     const apiResponse = await fetch(GEMINI_URL, {
       method: 'POST',
@@ -44,9 +48,11 @@ export default async function handler(req) {
         contents: [{ role: 'user', parts: [{ text: messageText }] }],
         systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
         generationConfig: { maxOutputTokens: 1000 }
-      })
+      }),
+      signal: controller.signal
     });
 
+    clearTimeout(timeoutId);
     const data = await apiResponse.json();
 
     if (data.error) {
@@ -59,7 +65,7 @@ export default async function handler(req) {
     const textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!textOutput) {
-      return new Response(JSON.stringify({ error: 'Google Gemini ha risposto, ma la risposta era vuota o bloccata dai filtri.' }), { 
+      return new Response(JSON.stringify({ error: 'Google Gemini ha risposto vuoto. Verifica i filtri di sicurezza della tua chiave.' }), { 
         status: 200,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
       });
@@ -74,7 +80,7 @@ export default async function handler(req) {
     });
 
   } catch (error) {
-    return new Response(JSON.stringify({ error: `Errore del server: ${error.message}` }), { 
+    return new Response(JSON.stringify({ error: `Il server ha impiegato troppo tempo a rispondere o ha riscontrato un errore: ${error.message}` }), { 
       status: 500,
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
