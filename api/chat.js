@@ -31,11 +31,11 @@ export default async function handler(req) {
       return new Response(JSON.stringify({ error: 'Chiave API non configurata nel pannello di Vercel.' }), { status: 500 });
     }
 
-    // Prendiamo solo l'ultimo messaggio dell'utente per evitare che vecchi messaggi formattati male blocchino l'API
     const lastUserMessage = contents.filter(c => c.role === 'user').pop();
     const messageText = lastUserMessage?.parts?.[0]?.text || "Ciao";
 
-    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    // Modificato l'URL alla versione stabile v1 e rimosso l'ambiguità del modello
+    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     const apiResponse = await fetch(GEMINI_URL, {
       method: 'POST',
@@ -49,7 +49,6 @@ export default async function handler(req) {
 
     const data = await apiResponse.json();
 
-    // Se Google restituisce un errore interno (es. chiave non valida o bloccata) lo intercettiamo qui
     if (data.error) {
       return new Response(JSON.stringify({ error: `Errore di Google Gemini: ${data.error.message}` }), { 
         status: 400,
@@ -60,7 +59,7 @@ export default async function handler(req) {
     const textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!textOutput) {
-      return new Response(JSON.stringify({ error: 'Google Gemini ha risposto, ma la risposta era vuota o bloccata dai filtri di sicurezza.' }), { 
+      return new Response(JSON.stringify({ error: 'Google Gemini ha risposto, ma la risposta era vuota o bloccata dai filtri.' }), { 
         status: 200,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
       });
