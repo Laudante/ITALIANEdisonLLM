@@ -9,6 +9,7 @@ When answering:
 - Answer in the same language the user writes in (italiano if they ask in Italian).`;
 
 export default async function handler(req) {
+  // Gestione CORS per permettere al frontend di comunicare liberamente
   if (req.method === 'OPTIONS') {
     return new Response('OK', {
       headers: {
@@ -25,50 +26,61 @@ export default async function handler(req) {
 
   try {
     const { contents } = await req.json();
-    const apiKey = process.env.GEMINI_API_KEY;
+    
+    // Legge la nuova chiave NVIDIA che hai salvato nel pannello delle variabili d'ambiente di Vercel
+    const apiKey = process.env.NVIDIA_API_KEY;
 
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: 'Chiave API non configurata nel pannello di Vercel.' }), { status: 500 });
+      return new Response(JSON.stringify({ error: 'Variabile NVIDIA_API_KEY non configurata o non trovata nel pannello di Vercel.' }), { 
+        status: 500,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      });
     }
 
-    const lastUserMessage = contents.filter(c => c.role === 'user').pop();
+    // Estrae l'ultimo messaggio inviato dall'utente
+    const lastUserMessage = contents && contents.filter ? contents.filter(c => c.role === 'user').pop() : null;
     const messageText = lastUserMessage?.parts?.[0]?.text || "Ciao";
 
-    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    // Endpoint ufficiale per l'API NVIDIA NIM
+    const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
 
-    // Passiamo le istruzioni direttamente nei contents per compatibilità totale
-    const payloadContents = [
-      { role: 'user', parts: [{ text: `INSTRUCTIONS: ${SYSTEM_PROMPT}` }] },
-      { role: 'model', parts: [{ text: "Understood. I am now the Edison Format Oracle. I will follow these rules strictly." }] },
-      { role: 'user', parts: [{ text: messageText }] }
-    ];
-
-    const apiResponse = await fetch(GEMINI_URL, {
+    // Chiamata HTTP formattata secondo gli standard richiesti dai server NVIDIA
+    const apiResponse = await fetch(NVIDIA_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
       body: JSON.stringify({
-        contents: payloadContents
+        model: "meta/llama-3.1-405b-instruct", 
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: messageText }
+        ],
+        max_tokens: 500
       })
     });
 
     const data = await apiResponse.json();
 
+    // Intercetta eventuali errori restituiti dall'API di NVIDIA
     if (data.error) {
-      return new Response(JSON.stringify({ error: `Errore di Google Gemini: ${data.error.message}` }), { 
+      return new Response(JSON.stringify({ error: `Errore di NVIDIA: ${data.error.message}` }), { 
         status: 400,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
       });
     }
 
-    const textOutput = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const textOutput = data.choices?.[0]?.message?.content;
 
     if (!textOutput) {
-      return new Response(JSON.stringify({ error: 'Google Gemini ha risposto vuoto.' }), { 
+      return new Response(JSON.stringify({ error: 'NVIDIA ha risposto correttamente, ma il testo generato era vuoto.' }), { 
         status: 200,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
       });
     }
 
+    // Risposta finale corretta da mandare al tuo index.html
     return new Response(JSON.stringify({ text: textOutput }), {
       status: 200,
       headers: {
@@ -78,7 +90,7 @@ export default async function handler(req) {
     });
 
   } catch (error) {
-    return new Response(JSON.stringify({ error: `Errore del server: ${error.message}` }), { 
+    return new Response(JSON.stringify({ error: `Errore del server con NVIDIA: ${error.message}` }), { 
       status: 500,
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
