@@ -28,7 +28,7 @@ export default async function handler(req) {
     const apiKey = process.env.NVIDIA_API_KEY;
 
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: 'Variabile NVIDIA_API_KEY non configurata su Vercel.' }), { 
+      return new Response(JSON.stringify({ error: 'Chiave NVIDIA_API_KEY non configurata su Vercel.' }), { 
         status: 500,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
       });
@@ -43,25 +43,36 @@ export default async function handler(req) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        'Authorization': `Bearer ${apiKey}`,
+        'Accept': 'application/json' // Forza NVIDIA a sputare solo JSON pulito
       },
       body: JSON.stringify({
-        model: "meta/llama-3.1-405b-instruct", 
+        // Passiamo a Llama 3.3, il modello di punta attuale per le chat di NVIDIA, velocissimo ed esente da blocchi
+        model: "meta/llama-3.3-70b-instruct", 
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: messageText }
         ],
         max_tokens: 500,
-        // FONDAMENTALE: Costringe NVIDIA a rispondere con un JSON singolo e pulito
-        stream: false 
+        stream: false
       })
     });
 
-    // Ora che lo stream è disattivato, questo comando non fallirà più!
-    const data = await apiResponse.json();
+    const responseText = await apiResponse.text();
+
+    // Se il server risponde ma non è un JSON (es. un errore HTML di NVIDIA), lo intercettiamo qui senza andare in crash
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      return new Response(JSON.stringify({ error: `NVIDIA ha risposto con un formato non valido: ${responseText.substring(0, 100)}` }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      });
+    }
 
     if (data.error) {
-      return new Response(JSON.stringify({ error: `Errore di NVIDIA: ${data.error.message}` }), { 
+      return new Response(JSON.stringify({ error: `Errore di NVIDIA: ${data.error.message || JSON.stringify(data.error)}` }), { 
         status: 400,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
       });
@@ -70,7 +81,7 @@ export default async function handler(req) {
     const textOutput = data.choices?.[0]?.message?.content;
 
     if (!textOutput) {
-      return new Response(JSON.stringify({ error: 'NVIDIA ha risposto vuoto.' }), { 
+      return new Response(JSON.stringify({ error: 'NVIDIA non ha generato testo. Controlla il credito del tuo account NVIDIA.' }), { 
         status: 200,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
       });
@@ -85,7 +96,7 @@ export default async function handler(req) {
     });
 
   } catch (error) {
-    return new Response(JSON.stringify({ error: `Errore del server con NVIDIA: ${error.message}` }), { 
+    return new Response(JSON.stringify({ error: `Errore del server: ${error.message}` }), { 
       status: 500,
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
